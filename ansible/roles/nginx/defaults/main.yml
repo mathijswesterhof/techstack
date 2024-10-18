@@ -1,0 +1,10 @@
+# file: roles/nginx/defaults/main.yml
+nginx_fingerprint: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+nginx_version:
+nginx_configs:
+  mathijswesterhof.nl:
+    port: 2010
+  cdn.mathijswesterhof.nl:
+    port: 2015
+  vpn.mathijswesterhof.nl:
+    port: 2050
