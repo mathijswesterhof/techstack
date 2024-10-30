@@ -1,0 +1,58 @@
+server {
+    listen 443 ssl;
+    listen 443 quic reuseport;
+    guic_gso       on;
+    quic_retry     on;
+    ssl_early_data on;
+
+    http2 on;
+    http3 on;
+    
+    server_name {{ item.domain }};
+    index index.php index.html index.htm;
+
+    access_log /var/log/nginx/ssl_access.log;
+    error_log /var/log/nginx/ssl_error.log;
+
+    ssl_certificate     /etc/letsencrypt/live/mathijswesterhof.nl/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/mathijswesterhof.nl/privkey.pem;
+    ssl_ciphers         EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+    ssl_protocols       TLSv1.1 TLSv1.2;
+
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Robots-Tag {{ item.robot | default('none') }};
+    add_header X-Download-Options noopen;
+    add_header X-Permitted-Cross-Domain-Policies none;
+
+    fastcgi_hide_header         X-Powered-By;
+    client_max_body_size        10G;
+    client_body_buffer_size     400M;
+
+    if ($badagent) {
+        return 403;
+    }
+
+    location / {
+        proxy_pass                 {{ item.protocol | default('http') }}://127.0.0.1:{{ item.forwarded_port }}$request_uri;
+        proxy_pass_header          X-CSRF-TOKEN;
+        proxy_pass_header          Content-Type;
+        proxy_set_header           Host               $host;
+        proxy_set_header           X-Real-IP          $remote_addr;
+        proxy_set_header           X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header           X-NginX-Proxy      true;
+        proxy_set_header           X-Forwarded-Proto  $scheme;
+        proxy_pass_request_headers on;
+        add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload";
+        add_header alt-svc                   'h3=":$server_port"; ma=1800';
+        add_header x-quic                    'h3';
+    }
+
+    {% if item.locations is defined -%}
+    {% for location in item.location -%}
+    location = {{ location.name }} {
+        {% for line in location.lines -%}{{ line }}{% endfor %}
+    }
+    {% endfor %}
+    {% endif -%}
+}

@@ -1,0 +1,52 @@
+{% for domain in nginx_configs %}
+server {
+    listen 80 {{ 'default_server' domain.default is defined else '' }};
+    server_name {{ domain.domain }} {% for alt in (domain.alternate.domain | default([])) %} {{ domain.domain }}{% endfor %};
+
+    access_log /var/log/nginx/forward.log;
+
+    if ($badagent) {
+        return 403;
+    }
+
+    location / {
+        return 301 https://{{ domain.host | default(domain.domain) }}$request_uri;
+    }
+
+    {% if domain.well_known is defined -%}
+    location ^~ /.well-known/acme-challenge {
+        allow all;
+        root {{ domain.well_known }};
+        default_type "text/plain";
+    }
+    {% endif %}
+}
+
+{% endfor %}
+
+{% for domain in nginx_configs if domain.alternate is defined %}
+{% for alternate in domain.alternate %}
+server {
+    listen 443 ssl {{ 'default_server' domain.default is defined else '' }};
+    http2 on;
+
+    server_name {{ alternate.domain }};
+
+    access_log /var/log/nginx/forward.log;
+
+    ssl_certificate     /etc/letsencrypt/live/{{ alternate.cert_path | default(nginx_letsencrypt_default_path) }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ alternate.cert_path | default(nginx_letsencrypt_default_path) }}/privkey.pem;
+    ssl_ciphers         EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+    ssl_protocols       TLSv1.1 TLSv1.2;
+
+    if ($badagent) {
+        return 403;
+    }
+
+    location / {
+        return 301 https://{{ alternate.domain }}$request_uri;
+    }
+}
+
+{% endfor %}
+{% endfor %}

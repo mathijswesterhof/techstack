@@ -1,0 +1,6 @@
+---
+- name: Nginx | install
+  ansible.builtin.include_tasks: 01_install.yml
+
+- name: Nginx | configure
+  ansible.builtin.include_tasks: 02_configure.yml

@@ -1,10 +1,45 @@
+---
 # file: roles/nginx/defaults/main.yml
-nginx_fingerprint: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
-nginx_version:
+
+nginx_letsencrypt_default_path: mathijswesterhof.nl
+#nginx_fingerprint: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+#nginx_version:
 nginx_configs:
-  mathijswesterhof.nl:
-    port: 2010
-  cdn.mathijswesterhof.nl:
-    port: 2015
-  vpn.mathijswesterhof.nl:
-    port: 2050
+  - domain: "www.mathijswesterhof.nl"
+    alternate:
+      - domain: mathijswesterhof.nl
+        cert_dir: mathijswesterhof.nl-0001
+      - domain: resdac.nl
+      - domain: www.resdac.nl
+      - domain: '""'
+        default: true
+    well_known: /var/www/deployables/DigitalOceanStack/web/_data/
+    robot: all
+    default: true
+    forwarded_port: 2011
+  - domain: "cloud.mathijswesterhof.nl"
+    alternate:
+      - domain: nextcloud.mathijswesterhof.nl
+    forwarded_port: 2020
+    locations:
+      - name: /.well-known/carddav
+        lines:
+          - return 301 $scheme://$host/remote.php/dav;
+      - name: /.well-known/caldav
+        lines:
+          - return 301 $scheme://$host/remote.php/dav;
+  - domain: "dns.mathijswesterhof.nl"
+    host: 165.22.194.86
+    alternate:
+      - domain: 165.22.194.86
+      - domain: 2a03:b0c0:2:f0::1ba:2001
+    forwarded_port: 5353
+  - domain: "cdn.mathijswesterhof.nl"
+    forwarded_port: 2031
+  - domain: "mealie.mathijswesterhof.nl"
+    forwarded_port: 2040
+  - domain: "photos.mathijswesterhof.nl"
+    forwarded_port: 2015
+  - domain: "vpn.mathijswesterhof.nl"
+    forwarded_port: 2050
+    protocol: https
