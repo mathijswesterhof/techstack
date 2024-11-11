@@ -1,21 +1,39 @@
 ---
-- name: Update apt cache
+- name: Nginx | Update apt cache
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
 
-- name: Add Nginx signing key
+- name: Nginx | Add signing key
   ansible.builtin.apt_key:
     url: https://nginx.org/keys/nginx_signing.key
     state: present
 
-- name: Add Nginx repository
+- name: Nginx | Add repository
   ansible.builtin.apt_repository:
     repo: "deb https://nginx.org/packages/mainline/ubuntu {{ ansible_facts['distribution_release'] }} nginx"
     state: present
     filename: nginx
 
-- name: Install the latest Nginx
+- name: Nginx | Install the latest version
   ansible.builtin.apt:
     name: nginx
     state: latest
+
+- name: Nginx | place badagent file
+  ansible.builtin.copy:
+    content: |
+      map $http_user_agent $badagent {
+          default         0;
+          ~*malicious     1;
+          ~*backdoor      1;
+          ~*netcrawler    1;
+          ~Antivirx       1;
+          ~Arian          1;
+          ~webbandit      1;
+          ~Go-http-client 1;
+          ~l9explore      1;
+      }
+    dest: "/etc/nginx/conf.d/useragent.rules.conf"
+    mode: '0755'
+

@@ -13,9 +13,9 @@ nginx_configs:
       - domain: www.resdac.nl
       - domain: '""'
         default: true
+        host: www.mathijswesterhof.nl
     well_known: /var/www/deployables/DigitalOceanStack/web/_data/
     robot: all
-    default: true
     forwarded_port: 2011
   - domain: "cloud.mathijswesterhof.nl"
     alternate:

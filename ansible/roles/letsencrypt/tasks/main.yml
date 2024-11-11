@@ -1,0 +1,8 @@
+---
+# file: roles/letsencrypt/tasks/main.yml
+
+- name: Letsencrypt | install
+  ansible.builtin.include_tasks: 01_install.yml
+
+- name: Letsencrypt | configure
+  ansible.builtin.include_tasks: 02_configure.yml

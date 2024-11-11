@@ -1,0 +1,6 @@
+[docker]
+web-main ansible_ssh_host=10.0.2.5 fqdn=mathijswesterhof.nl
+#backup ansible_ssh_host=x.x.x.x fqdn=resdac.nl
+
+[vault]
+vault ansible_ssh_host=10.0.2.4 fqdn=vault.mathijswesterhof.nl

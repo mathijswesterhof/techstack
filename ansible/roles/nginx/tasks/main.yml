@@ -1,4 +1,6 @@
 ---
+# file: roles/nginx/defaults/main.yml
+
 - name: Nginx | install
   ansible.builtin.include_tasks: 01_install.yml
 

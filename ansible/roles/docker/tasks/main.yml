@@ -1,0 +1,6 @@
+---
+- name: Docker | install
+  ansible.builtin.include_tasks: 01_install.yml
+
+- name: Docker | configure
+  ansible.builtin.include_tasks: 02_configure.yml

@@ -1,0 +1,9 @@
+---
+
+- name: setup main machine
+  hosts: docker
+  become: true
+  roles:
+    - letsencrypt
+    - nginx
+    - docker

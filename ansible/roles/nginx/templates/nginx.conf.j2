@@ -1,7 +1,11 @@
 server {
+    {% if domain.default is defined %}
+    listen 443 quic reuseport default_server;
+    {% else %}
+    listen 443 quic;
+    {% endif %}
     listen 443 ssl;
-    listen 443 quic reuseport;
-    guic_gso       on;
+    quic_gso       on;
     quic_retry     on;
     ssl_early_data on;
 
@@ -49,7 +53,7 @@ server {
     }
 
     {% if item.locations is defined -%}
-    {% for location in item.location -%}
+    {% for location in item.locations -%}
     location = {{ location.name }} {
         {% for line in location.lines -%}{{ line }}{% endfor %}
     }

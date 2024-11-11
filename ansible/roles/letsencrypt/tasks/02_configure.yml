@@ -1,0 +1,45 @@
+---
+- name: Letsencrypt | create directories
+  ansible.builtin.file:
+    path: "{{ letsencrypt_renewal_hook }}"
+    state: directory
+    mode: "0755"
+
+- name: Letsencrypt | place deploy script
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      systemctl reload nginx
+      systemctl restart dnsdist
+    dest: "{{ letsencrypt_renewal_hook }}/reload-systems.sh"
+    mode: '0755'
+
+- name: Letsencrypt | place credentials file
+  ansible.builtin.copy:
+    content: |
+      dns_transip_username = mathijswesterhof
+      dns_transip_key_file = /root/.ssh/transip_secret.key
+    dest: "{{ letsencrypt_transip_credentials }}"
+    mode: '0600'
+
+- name: Letsencrypt | place deploy script
+  ansible.builtin.template:
+    src: transip.key
+    dest: /root/.ssh/transip_secret.key
+    mode: '0600'
+
+- name: Letsencrypt | Configure http upgrade for each domain
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly -n --agree-tos
+      --preferred-challenges dns
+      -a dns-transip
+      --dns-transip-propagation-seconds {{ letsencrypt_propagation }}
+      --dns-transip-credentials {{ letsencrypt_transip_credentials }}
+      -m {{ letsencrypt_email }}
+      -d {{ item }}
+      --deploy-hook {{ letsencrypt_renewal_hook }}/reload-systems.sh
+  register: letsencrypt_output
+  changed_when: "'Congratulations' in letsencrypt_output.stdout"
+  loop: "{{ letsencrypt_domains }}"
+  tags: never

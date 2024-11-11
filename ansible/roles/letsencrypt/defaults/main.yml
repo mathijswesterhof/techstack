@@ -1,0 +1,11 @@
+---
+# file: roles/letsencrypt/defaults/main.yml
+
+letsencrypt_propagation: 360
+letsencrypt_transip_credentials: /root/.ssh/transip.ini
+letsencrypt_renewal_hook: /etc/letsencrypt/renewal-hooks
+letsencrypt_email: repeater@mathijswesterhof.nl
+letsencrypt_domains:
+ - "dns.mathijswesterhof.nl"
+ - "mathijswesterhof.nl"
+ - "*.mathijswesterhof.nl"
