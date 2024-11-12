@@ -1,11 +1,12 @@
 {% for domain in nginx_configs %}
 server {
-    {% if domain.default is defined %}
+    {% if domain.default is defined -%}
     listen 80 default_server;
-    {% else %}
+    {% else -%}
     listen 80;
-    {% endif %}
-    server_name {{ domain.domain }} {% for alt in (domain.alternate.domain | default([])) %} {{ alt }}{% endfor %};
+    {% endif -%}
+    http2 on;
+    server_name {{ domain.domain }} {% for alt in (domain.alternate | default([])) %} {{ alt.domain }}{% endfor %};
 
     access_log /var/log/nginx/forward.log;
 
@@ -23,9 +24,8 @@ server {
         root {{ domain.well_known }};
         default_type "text/plain";
     }
-    {% endif %}
+    {% endif -%}
 }
-
 {% endfor %}
 
 {% for domain in nginx_configs if domain.alternate is defined %}
@@ -53,7 +53,7 @@ server {
     }
 
     location / {
-        return 301 https://{{ alternate.host | default(alternate.domain) }}$request_uri;
+        return 301 https://{{ alternate.host | default(domain.domain) }}$request_uri;
     }
 }
 

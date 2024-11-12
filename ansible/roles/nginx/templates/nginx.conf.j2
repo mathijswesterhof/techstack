@@ -18,8 +18,8 @@ server {
     access_log /var/log/nginx/ssl_access.log;
     error_log /var/log/nginx/ssl_error.log;
 
-    ssl_certificate     /etc/letsencrypt/live/mathijswesterhof.nl/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/mathijswesterhof.nl/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/{{ domain.cert_path | default(nginx_letsencrypt_default_path) }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain.cert_path | default(nginx_letsencrypt_default_path) }}/privkey.pem;
     ssl_ciphers         EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
     ssl_protocols       TLSv1.1 TLSv1.2;
 

@@ -1,16 +1,18 @@
 ---
 # file: roles/nginx/defaults/main.yml
 
-nginx_letsencrypt_default_path: mathijswesterhof.nl
+nginx_letsencrypt_default_path: mathijswesterhof.nl-0001
 #nginx_fingerprint: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
 #nginx_version:
 nginx_configs:
   - domain: "www.mathijswesterhof.nl"
     alternate:
       - domain: mathijswesterhof.nl
-        cert_dir: mathijswesterhof.nl-0001
+        cert_path: mathijswesterhof.nl
       - domain: resdac.nl
+        # cert_path: resdac.nl
       - domain: www.resdac.nl
+        # cert_path: resdac.nl-0001
       - domain: '""'
         default: true
         host: www.mathijswesterhof.nl
