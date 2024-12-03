@@ -1,1 +1,21 @@
 ---
+- block:
+    - name: Docker | make filepath available if not yet there
+      ansible.builtin.file:
+        path: "{{ docker_compose_path }}"
+        state: directory
+        recurse: true
+        mode: 0755
+
+    - name: Docker | make sure that all compose files are available
+      ansible.builtin.find:
+        path: "{{ docker_compose_path }}"
+        file_type: file
+        patterns: "docker-compose.yml"
+        recurse: true
+        limit: 2
+      register: dockerfiles
+
+  tags:
+    - docker
+    - docker-configure

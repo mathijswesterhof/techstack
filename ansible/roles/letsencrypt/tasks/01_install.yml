@@ -1,17 +1,24 @@
 ---
-- name: Letsencrypt | Update apt cache
-  ansible.builtin.apt:
-    update_cache: yes
-    cache_valid_time: 3600
+- block:
+    - name: Letsencrypt | Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
 
-- name: Letsencrypt | Install the latest version
-  ansible.builtin.apt:
-    name:
-      - certbot
-      - python3-pip
-    state: latest
+    - name: Letsencrypt | Install the latest version
+      ansible.builtin.apt:
+        name:
+          - certbot
+          - python3-pip
+        state: latest
 
-- name: Letsencrypt | Install the latest version
-  ansible.builtin.pip:
-    name: certbot-dns-transip
-    break_system_packages: true
+    - name: Letsencrypt | Install the latest version
+      ansible.builtin.pip:
+        name: certbot-dns-transip
+        break_system_packages: true
+
+  tags:
+    - letsencrypt
+    - letsencrypt-install
+    - certbot
+    - certbot-install
